@@ -1,0 +1,45 @@
+services:
+  yt-frame-uhd:
+    build: .
+    container_name: yt-frame-uhd
+    ports:
+      - "8000:8000"
+    environment:
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
+      - MINIO_SECURE=${MINIO_SECURE}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+    env_file:
+      - .env
+    command: python main-uhd.py
+    restart: unless-stopped
+    networks:
+      - yt-frame-network
+
+  yt-frame-hd:
+    build: .
+    container_name: yt-frame-hd
+    ports:
+      - "8001:8001"
+    environment:
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
+      - MINIO_SECURE=${MINIO_SECURE}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+    env_file:
+      - .env
+    command: python main-hd.py
+    restart: unless-stopped
+    networks:
+      - yt-frame-network
+
+networks:
+  yt-frame-network:
+    driver: bridge
+
+# Note: Using external MinIO bucket at ${MINIO_ENDPOINT}
+# Ensure your .env file contains the correct external MinIO credentials
