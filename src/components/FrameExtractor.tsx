@@ -2,10 +2,15 @@
 
 import { useState } from "react";
 import { useSession } from "@/lib/auth/client";
+import { saveFrameExtraction } from "@/actions/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { extractYouTubeVideoId, getYouTubeThumbnail, getYouTubeVideoTitle } from "@/lib/youtube-utils";
 import Image from "next/image";
+import Link from "next/link";
+import { History, Download } from "lucide-react";
+import { toast } from "sonner";
 
 interface ExtractResponse {
   message: string;
@@ -20,6 +25,7 @@ export default function FrameExtractor() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ExtractResponse | null>(null);
   const [error, setError] = useState("");
+  const [savingHistory, setSavingHistory] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +57,37 @@ export default function FrameExtractor() {
 
       const data: ExtractResponse = await response.json();
       setResult(data);
+
+      // Save to history if user is signed in
+      if (session?.user?.id) {
+        setSavingHistory(true);
+        try {
+          const videoId = extractYouTubeVideoId(youtubeUrl);
+          const videoTitle = videoId ? await getYouTubeVideoTitle(videoId) : null;
+          const videoThumbnail = videoId ? getYouTubeThumbnail(videoId) : null;
+
+          const historyResult = await saveFrameExtraction({
+            userId: session.user.id,
+            youtubeUrl,
+            videoTitle,
+            videoThumbnail,
+            timestamp,
+            frameUrl: data.file_url,
+            quality: isSignedIn ? "UHD" : "HD",
+          });
+
+          if (historyResult.success) {
+            toast.success("Frame extracted and saved to history!");
+          }
+        } catch (historyError) {
+          console.error("Failed to save to history:", historyError);
+          toast.error("Frame extracted successfully but failed to save to history");
+        } finally {
+          setSavingHistory(false);
+        }
+      } else {
+        toast.success("Frame extracted successfully!");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -72,8 +109,18 @@ export default function FrameExtractor() {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">YouTube Frame Extractor</h1>
-        <p className="text-gray-600 mt-2">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold text-gray-900">YouTube Frame Extractor</h1>
+          {session && (
+            <Link href="/history">
+              <Button variant="outline" size="sm">
+                <History className="h-4 w-4 mr-2" />
+                History
+              </Button>
+            </Link>
+          )}
+        </div>
+        <p className="text-gray-600">
           Extract frames from YouTube videos at specific timestamps.
           {session ? " As a signed-in user, you get UHD quality." : " Sign in for UHD quality frames."}
         </p>
@@ -100,8 +147,8 @@ export default function FrameExtractor() {
             required
           />
         </div>
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Extracting..." : `Extract ${session ? "UHD" : "HD"} Frame`}
+        <Button type="submit" disabled={loading || savingHistory} className="w-full">
+          {loading ? "Extracting..." : savingHistory ? "Saving..." : `Extract ${session ? "UHD" : "HD"} Frame`}
         </Button>
       </form>
 
@@ -123,9 +170,18 @@ export default function FrameExtractor() {
               width={640}
               height={360}
               className="w-full h-auto"
+              onError={(e) => {
+                // Fallback to regular img tag if Next.js Image fails
+                const target = e.target as HTMLImageElement;
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = `<img src="${result.file_url}" alt="Extracted frame" class="w-full h-auto" />`;
+                }
+              }}
             />
           </div>
           <Button onClick={handleDownload} variant="outline" className="w-full">
+            <Download className="h-4 w-4 mr-2" />
             Download Frame
           </Button>
         </div>
