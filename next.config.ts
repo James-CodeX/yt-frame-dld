@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'minio.jameskaranja.me',
+        port: '9000',
+        pathname: '/yt-frames/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

@@ -1,3 +1,4 @@
 import { getMe } from "./me";
 
-export { getMe };
+export * from "./me";
+export * from "./frame-extraction";

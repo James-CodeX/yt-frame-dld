@@ -1,49 +1,139 @@
-import { buttonVariants } from "@/components/ui/button";
+"use client";"use client";import { buttonVariants } from "@/components/ui/button";
+
+
+
+import FrameExtractor from "@/components/FrameExtractor";import { cn } from "@/lib/utils";
+
+import { useSession } from "@/lib/auth/client";
+
+import { Button } from "@/components/ui/button";import FrameExtractor from "@/components/FrameExtractor";import Image from "next/image";
+
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
+
+import Link from "next/link";import { useSession } from "@/lib/auth/client";import Link from "next/link";
+
 import SignOutButton from "../(auth)/components/button-signout";
-import { getMe } from "@/actions/user";
 
-export default async function Home() {
-  const me = await getMe();
+import { Button } from "@/components/ui/button";import SignOutButton from "../(auth)/components/button-signout";
 
-  return (
-    <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-      <main className="row-start-2 flex flex-col items-center gap-8 sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-center font-[family-name:var(--font-geist-mono)] text-sm sm:text-left">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="rounded bg-black/[.05] px-1 py-0.5 font-semibold dark:bg-white/[.06]">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+export default function Home() {
 
-        <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <a
-            className="flex h-10 items-center justify-center gap-2 rounded-full border border-solid border-transparent bg-foreground px-4 text-sm text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] sm:h-12 sm:px-5 sm:text-base"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
+  const { data: session } = useSession();import { cn } from "@/lib/utils";import { getMe } from "@/actions/user";
+
+
+
+  return (import Link from "next/link";
+
+    <div className="min-h-screen bg-gray-50 py-12">
+
+      <div className="max-w-4xl mx-auto px-4">import SignOutButton from "../(auth)/components/button-signout";export default async function Home() {
+
+        <header className="text-center mb-8">
+
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">YouTube Frame Extractor</h1>  const me = await getMe();
+
+          <p className="text-lg text-gray-600">
+
+            Extract high-quality frames from YouTube videos instantlyexport default function Home() {
+
+          </p>
+
+        </header>  const { data: session } = useSession();  return (
+
+
+
+        {session ? (    <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
+
+          <div className="text-center mb-8">
+
+            <p className="text-gray-700">Welcome back, {session.user?.name}!</p>  return (      <main className="row-start-2 flex flex-col items-center gap-8 sm:items-start">
+
+            <div className="mt-4">
+
+              <SignOutButton />    <div className="min-h-screen bg-gray-50 py-12">        <Image
+
+            </div>
+
+          </div>      <div className="max-w-4xl mx-auto px-4">          className="dark:invert"
+
+        ) : (
+
+          <div className="text-center mb-8">        <header className="text-center mb-8">          src="/next.svg"
+
+            <p className="text-gray-700 mb-4">Sign in to access UHD quality frames</p>
+
+            <Link          <h1 className="text-4xl font-bold text-gray-900 mb-2">YouTube Frame Extractor</h1>          alt="Next.js logo"
+
+              href="/signin"
+
+              className={cn(Button({ variant: "default" }))}          <p className="text-lg text-gray-600">          width={180}
+
+            >
+
+              Sign In            Extract high-quality frames from YouTube videos instantly          height={38}
+
+            </Link>
+
+          </div>          </p>          priority
+
+        )}
+
+        </header>        />
+
+        <FrameExtractor />
+
+      </div>        <ol className="list-inside list-decimal text-center font-[family-name:var(--font-geist-mono)] text-sm sm:text-left">
+
+    </div>
+
+  );        {session ? (          <li className="mb-2">
+
+}
+          <div className="text-center mb-8">            Get started by editing{" "}
+
+            <p className="text-gray-700">Welcome back, {session.user?.name}!</p>            <code className="rounded bg-black/[.05] px-1 py-0.5 font-semibold dark:bg-white/[.06]">
+
+            <div className="mt-4">              src/app/page.tsx
+
+              <SignOutButton />            </code>
+
+            </div>            .
+
+          </div>          </li>
+
+        ) : (          <li>Save and see your changes instantly.</li>
+
+          <div className="text-center mb-8">        </ol>
+
+            <p className="text-gray-700 mb-4">Sign in to access UHD quality frames</p>
+
+            <Link        <div className="flex flex-col items-center gap-4 sm:flex-row">
+
+              href="/signin"          <a
+
+              className={cn(Button({ variant: "default" }))}            className="flex h-10 items-center justify-center gap-2 rounded-full border border-solid border-transparent bg-foreground px-4 text-sm text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] sm:h-12 sm:px-5 sm:text-base"
+
+            >            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+
+              Sign In            target="_blank"
+
+            </Link>            rel="noopener noreferrer"
+
+          </div>          >
+
+        )}            <Image
+
               className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
+
+        <FrameExtractor />              src="/vercel.svg"
+
+      </div>              alt="Vercel logomark"
+
+    </div>              width={20}
+
+  );              height={20}
+
+}            />
             Deploy now
           </a>
           <a
